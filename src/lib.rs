@@ -1,9 +1,8 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::Vector;
-use near_sdk::near_bindgen;
-near_sdk::setup_alloc!();
+use near_sdk::{near_bindgen, PanicOnDefault};
 
-#[derive(Default, BorshDeserialize, BorshSerialize)]
+#[derive(BorshDeserialize, BorshSerialize)]
 pub struct Writing {
   pub text: String,
   pub sender: String,
@@ -11,15 +10,15 @@ pub struct Writing {
 }
 
 #[near_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
   pub writing_list: Vector<Writing>, //This line gives err
 }
 
-impl Default for Contract {
-  fn default() -> Self {
-    return Default::default();
-  }
+/// Helper structure for keys of the persistent collections.
+#[derive(BorshSerialize)]
+pub enum StorageKey {
+  WritingList,
 }
 
 #[near_bindgen]
@@ -37,5 +36,14 @@ impl Contract {
   }
   pub fn get_writings(&self) -> u64 {
     return self.writing_list.len();
+  }
+
+  #[init]
+  pub fn new_contract() -> Self {
+    let this = Self {
+      writing_list: Vector::new(StorageKey::WritingList.try_to_vec().unwrap())
+    };
+
+    this
   }
 }
