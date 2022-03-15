@@ -1,8 +1,10 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::Vector;
+use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{near_bindgen, PanicOnDefault};
 
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[serde(crate = "near_sdk::serde")]
 pub struct Writing {
   pub text: String,
   pub sender: String,
